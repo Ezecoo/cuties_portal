@@ -1,12 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cafe Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Patrick Hand', cursive;
-      background: linear-gradient(#FDE
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  async function requestRole() {
+    const role = prompt("Which role would you like to request?");
+    if (!role) return;
+
+    try {
+      await addDoc(collection(db, "roleRequests"), {
+        user: auth.currentUser.displayName || auth.currentUser.email,
+        roleRequested: role,
+        timestamp: serverTimestamp()
+      });
+      alert("Role request sent! ✅");
+    } catch (e) {
+      alert("Error: " + e.message);
+    }
+  }
+
+  async function requestEvent() {
+    const event = prompt("Which event would you like to request?");
+    if (!event) return;
+
+    try {
+      await addDoc(collection(db, "eventRequests"), {
+        user: auth.currentUser.displayName || auth.currentUser.email,
+        eventRequested: event,
+        timestamp: serverTimestamp()
+      });
+      alert("Event request sent! ✅");
+    } catch (e) {
+      alert("Error: " + e.message);
+    }
+  }
+
+  function logout() {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
+    }).catch((error) => alert(error.message));
+  }
+</script>
